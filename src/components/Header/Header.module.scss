@@ -1,0 +1,42 @@
+.Header {
+  display: flex;
+  height: 80px;
+  background-color: #ffffff;
+  padding: 0 22px;
+  align-items: center;
+}
+.Name {
+  display: block;
+  font-size: 18px;
+  line-height: 28px;
+  color: rgba(0, 0, 0, 0.85);
+}
+.SignIn,
+.SignUp {
+  background-color: #ffffff;
+  border: none;
+  font-size: 18px;
+  line-height: 28px;
+}
+.SignIn {
+  margin-left: auto;
+  margin-right: 20px;
+  color: rgba(0, 0, 0, 0.85);
+}
+.SignUp {
+  width: 109px;
+  height: 51px;
+  border: 1px solid #52c41a;
+  color: #52c41a;
+  border-radius: 5px;
+}
+.Text {
+  display: block;
+  padding: 10px;
+}
+.SignInText {
+  color: rgba(0, 0, 0, 0.85);
+}
+.SignUpText {
+  color: #52c41a;
+}
