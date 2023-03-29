@@ -7,7 +7,7 @@ import { fetchArticles, onPaginationClick } from '../../redux/articlesSlice'
 
 import './MyPagination.scss'
 
-export default function MyPagination() {
+const MyPagination = () => {
   let { articlesCount, currentPage } = useSelector((state) => state.articles)
   const dispatch = useDispatch()
   let history = useHistory()
@@ -37,3 +37,4 @@ export default function MyPagination() {
     />
   )
 }
+export default MyPagination

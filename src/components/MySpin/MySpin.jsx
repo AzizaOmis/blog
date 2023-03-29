@@ -2,7 +2,7 @@ import React from 'react'
 import { Space, Spin } from 'antd'
 
 import classes from './MySpin.module.scss'
-export default function MySpin() {
+const MySpin = () => {
   return (
     <div className={classes.Spin}>
       <Space>
@@ -11,3 +11,4 @@ export default function MySpin() {
     </div>
   )
 }
+export default MySpin

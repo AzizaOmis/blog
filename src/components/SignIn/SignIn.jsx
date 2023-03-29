@@ -1,20 +1,57 @@
-import React from 'react'
+import React, { useEffect } from 'react'
 import { useForm } from 'react-hook-form'
-import { Link } from 'react-router-dom'
+import { useDispatch, useSelector } from 'react-redux'
+import { Link, useHistory } from 'react-router-dom'
+import { toast, ToastContainer } from 'react-toastify'
 
-import { linkConstants, signConstants } from '../../services/constants'
+import { fetchSignIn } from '../../redux/signSlice'
+import { linkConstants, signConstants, toastConstants } from '../../services/constants'
+import MySpin from '../MySpin'
 
+import 'react-toastify/dist/ReactToastify.css'
 import classes from './SignIn.module.scss'
-export default function SignIn() {
+const SignIn = () => {
+  const dispatch = useDispatch()
+  let history = useHistory()
+  const signData = useSelector((state) => state.sign)
+  useEffect(() => {
+    if (Object.keys(signData.errorMessage).length !== 0) {
+      for (let key in signData.errorMessage) {
+        toast.error(key + ' ' + signData.errorMessage[key], toastConstants.params)
+      }
+      return
+    }
+    if (signData.error) {
+      toast.error(toastConstants.defaultErrMessage, toastConstants.params)
+    }
+  }, [signData.error, signData.errorMessage])
+  useEffect(() => {
+    if (!signData.success) return
+    toast.success(toastConstants.successSignIn, toastConstants.params)
+    history.push({
+      pathname: '/'
+    })
+  }, [signData.success])
   const {
     register,
     handleSubmit,
     formState: { errors }
   } = useForm()
-  const onSubmit = (data) => console.log(data)
+  const onSubmit = (val) => {
+    const data = {
+      user: {
+        email: val.email,
+        password: val.password
+      }
+    }
+    console.log(data)
+    dispatch(fetchSignIn(data))
+  }
   return (
     <form onSubmit={handleSubmit(onSubmit)} className={classes.SignIn}>
-      <h4 className={classes.Title}>Create new account</h4>
+      <ToastContainer />
+      <h4 className={classes.Title}>Sign In</h4>
+      {signData.loading && <MySpin />}
       <div className={classes.Data}>
         <div className={classes.Form}>
           <label className={classes.Label} htmlFor={signConstants.email}>
@@ -65,3 +102,4 @@ export default function SignIn() {
     </form>
   )
 }
+export default SignIn

@@ -9,17 +9,7 @@ import Heart from '../../icons/Heart.svg'
 import { clippingText } from '../../services/helperFns'
 
 import classes from './Article.module.scss'
-export default function Article({
-  preview,
-  title,
-  description,
-  body,
-  tagList,
-  createdAt,
-  favorited,
-  favoritesCount,
-  author
-}) {
+const Article = ({ preview, title, description, body, tagList, createdAt, favorited, favoritesCount, author }) => {
   const tags = tagList.map((tag) => (
     <li key={uuidv4()} className={classes.Tag}>
       {preview ? clippingText(tag, 20) : tag}
@@ -58,3 +48,4 @@ export default function Article({
     </article>
   )
 }
+export default Article

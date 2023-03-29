@@ -1,8 +1,12 @@
-import React from 'react'
+import React, { useEffect } from 'react'
+import { useDispatch, useSelector } from 'react-redux'
 import { BrowserRouter as Router, Route } from 'react-router-dom'
 
+import { fetchLogin } from '../../redux/signSlice'
+import { linkConstants } from '../../services/constants'
 import ArticleCard from '../ArticleCard'
 import ArticleList from '../ArticleList'
+import EditProfile from '../EditProfile'
 import Header from '../Header'
 import MyPagination from '../MyPagination'
 import SignIn from '../SignIn'
@@ -10,14 +14,27 @@ import SignUp from '../SignUp'
 
 import classes from './App.module.scss'
 
-export default function App() {
+const App = () => {
+  const dispatch = useDispatch()
+  const token = useSelector((state) => state.sign.user.token)
+  useEffect(() => {
+    if (!localStorage.getItem('token')) return
+    if (localStorage.getItem('token') !== '') {
+      const token = localStorage.getItem('token')
+      dispatch(fetchLogin(token))
+    }
+  }, [])
+  useEffect(() => {
+    localStorage.setItem('token', token)
+  }, [token])
   return (
     <section className={classes.App}>
       <Router>
         <Route path="/" component={Header} />
         <section className={classes.Main}>
-          <Route path="/sign-in" component={SignIn} />
-          <Route path="/sign-up" component={SignUp} />
+          <Route path={linkConstants.signIn} component={SignIn} />
+          <Route path={linkConstants.signUp} component={SignUp} />
+          <Route path={linkConstants.profile} component={EditProfile} />
           <Route exact strict path="/articles/" component={ArticleList} />
           <Route exact strict path="/articles/" component={MyPagination} />
           <Route
@@ -32,3 +49,4 @@ export default function App() {
     </section>
   )
 }
+export default App

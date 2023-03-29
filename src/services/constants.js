@@ -3,7 +3,10 @@ export const apiConstants = {
   getArticles: 'articles?',
   getArticleBySlug: 'articles/',
   limit: 'limit=5',
-  offset: '&offset='
+  offset: '&offset=',
+  signUp: 'users',
+  signIn: 'users/login',
+  login: 'user'
 }
 export const signConstants = {
   username: 'username',
@@ -25,9 +28,30 @@ export const signConstants = {
   passwordPlaceholder: 'Password',
   emailPlaceholder: 'Email address',
   create: 'Create',
-  login: 'Login'
+  login: 'Login',
+  save: 'Save',
+  image: 'image',
+  imagePlaceholder: 'Avatar image',
+  invalidImage: 'You entered an invalid image url.'
 }
 export const linkConstants = {
   signIn: '/sign-in',
-  signUp: '/sign-up'
+  signUp: '/sign-up',
+  profile: '/profile'
+}
+export const toastConstants = {
+  params: {
+    position: 'top-right',
+    autoClose: 5000,
+    hideProgressBar: false,
+    closeOnClick: true,
+    pauseOnHover: true,
+    draggable: true,
+    progress: undefined,
+    theme: 'light'
+  },
+  defaultErrMessage: 'Something goes wrong. Please try again later',
+  successSignUp: 'You have successfully registered!',
+  successSignIn: 'You have successfully logged in!',
+  successUpdate: 'Your data has been successfully updated'
 }

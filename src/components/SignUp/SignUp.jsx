@@ -1,13 +1,35 @@
-import React from 'react'
+import React, { useEffect } from 'react'
 import { useForm } from 'react-hook-form'
+import { useDispatch, useSelector } from 'react-redux'
 import { Link } from 'react-router-dom'
+import { toast, ToastContainer } from 'react-toastify'
 import { yupResolver } from '@hookform/resolvers/yup'
 import * as Yup from 'yup'
 
-import { linkConstants, signConstants } from '../../services/constants'
+import { fetchSignUp } from '../../redux/signSlice'
+import { linkConstants, signConstants, toastConstants } from '../../services/constants'
+import MySpin from '../MySpin'
 
+import 'react-toastify/dist/ReactToastify.css'
 import classes from './SignUp.module.scss'
-export default function SignUp() {
+const SignUp = () => {
+  const dispatch = useDispatch()
+  const signData = useSelector((state) => state.sign)
+  useEffect(() => {
+    if (Object.keys(signData.errorMessage).length !== 0) {
+      for (let key in signData.errorMessage) {
+        toast.error(key + ' ' + signData.errorMessage[key], toastConstants.params)
+      }
+      return
+    }
+    if (signData.error) {
+      toast.error(toastConstants.defaultErrMessage, toastConstants.params)
+    }
+  }, [signData.error, signData.errorMessage])
+  useEffect(() => {
+    if (!signData.success) return
+    toast.success(toastConstants.successSignUp, toastConstants.params)
+  }, [signData.success])
   const validation = Yup.object().shape({
     username: Yup.string()
       .required(signConstants.isRequired)
@@ -31,10 +53,22 @@ export default function SignUp() {
     handleSubmit,
     formState: { errors }
   } = useForm({ resolver: yupResolver(validation) })
-  const onSubmit = (data) => console.log(data)
+  const onSubmit = (val) => {
+    const data = {
+      user: {
+        username: val.username,
+        email: val.email,
+        password: val.password
+      }
+    }
+    console.log(data)
+    dispatch(fetchSignUp(data))
+  }
   return (
     <form onSubmit={handleSubmit(onSubmit)} className={classes.SignUp}>
+      <ToastContainer />
       <h4 className={classes.Title}>Create new account</h4>
+      {signData.loading && <MySpin />}
       <div className={classes.Data}>
         <div className={classes.Form}>
           <label className={classes.Label} htmlFor={signConstants.username}>
@@ -116,3 +150,4 @@ export default function SignUp() {
     </form>
   )
 }
+export default SignUp

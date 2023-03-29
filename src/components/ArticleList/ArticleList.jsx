@@ -8,7 +8,7 @@ import MySpin from '../MySpin'
 
 import classes from './ArticleList.module.scss'
 
-export default function ArticleList() {
+const ArticleList = () => {
   const { articles, loading, error } = useSelector((state) => state.articles)
   if (loading) return <MySpin />
   if (error) return <MyAlert />
@@ -33,3 +33,4 @@ export default function ArticleList() {
   })
   return <ul className={classes.ArticleList}>{list}</ul>
 }
+export default ArticleList

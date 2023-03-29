@@ -6,7 +6,7 @@ import Article from '../Article/Article'
 import MyAlert from '../MyAlert/MyAlert'
 import MySpin from '../MySpin'
 
-export default function ArticleCard({ slug }) {
+const ArticleCard = ({ slug }) => {
   const dispatch = useDispatch()
   useEffect(() => {
     dispatch(fetchArticleBySlug(slug))
@@ -29,3 +29,4 @@ export default function ArticleCard({ slug }) {
     />
   )
 }
+export default ArticleCard
