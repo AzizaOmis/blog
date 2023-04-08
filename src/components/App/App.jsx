@@ -2,12 +2,13 @@ import React, { useEffect } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import { BrowserRouter as Router, Route } from 'react-router-dom'
 
-import { fetchLogin } from '../../redux/signSlice'
 import { linkConstants } from '../../services/constants'
-import ArticleCard from '../ArticleCard'
+import { fetchLogin } from '../../store/signSlice'
+import Article from '../Article'
 import ArticleList from '../ArticleList'
 import EditProfile from '../EditProfile'
 import Header from '../Header'
+import MyArticle from '../MyArticle'
 import MyPagination from '../MyPagination'
 import SignIn from '../SignIn'
 import SignUp from '../SignUp'
@@ -41,9 +42,17 @@ const App = () => {
             path="/articles/:slug"
             exact
             render={({ match }) => {
-              return <ArticleCard slug={match.params.slug} />
+              return <Article slug={match.params.slug} />
             }}
           />
+          <Route
+            path="/articles/:slug/edit"
+            exact
+            render={({ match }) => {
+              return <MyArticle edit={true} slug={match.params.slug} />
+            }}
+          />
+          <Route path={linkConstants.newArticle} component={MyArticle} />
         </section>
       </Router>
     </section>

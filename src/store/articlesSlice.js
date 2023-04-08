@@ -12,7 +12,7 @@ export const fetchArticles = createAsyncThunk('articles/fetchArticles', async (o
     }
     return response.json()
   } catch (error) {
-    return rejectWithValue(error)
+    return rejectWithValue(error.message)
   }
 })
 export const articlesSlice = createSlice({
@@ -43,8 +43,7 @@ export const articlesSlice = createSlice({
       })
       .addCase(fetchArticles.rejected, (state, action) => {
         state.loading = false
-        state.error = true
-        console.log(action.payload.message)
+        state.error = action.payload ? true : false
       })
   }
 })

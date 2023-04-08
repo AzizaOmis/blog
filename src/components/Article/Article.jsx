@@ -1,51 +1,99 @@
-import React from 'react'
+import React, { useEffect } from 'react'
+import ReactMarkdown from 'react-markdown'
+import { useDispatch, useSelector } from 'react-redux'
+import { useHistory } from 'react-router-dom'
+import { Button, Popconfirm } from 'antd'
 import format from 'date-fns/format'
-import Markdown from 'markdown-to-jsx'
 import { v4 as uuidv4 } from 'uuid'
 
 import Avatar from '../../icons/Avatar.svg'
 import Favorited from '../../icons/Favorited.svg'
 import Heart from '../../icons/Heart.svg'
-import { clippingText } from '../../services/helperFns'
+import { clearData, fetchArticleBySlug } from '../../store/articleSlice'
+import { clearPayload, fetchDeleteMyArticle } from '../../store/myArticleSlice'
+import MySpin from '../MySpin'
 
 import classes from './Article.module.scss'
-const Article = ({ preview, title, description, body, tagList, createdAt, favorited, favoritesCount, author }) => {
-  const tags = tagList.map((tag) => (
-    <li key={uuidv4()} className={classes.Tag}>
-      {preview ? clippingText(tag, 20) : tag}
-    </li>
-  ))
-  const release = format(new Date(createdAt), 'MMMM dd, yyyy')
-  return (
-    <article className={preview ? `${classes.Article} ${classes.Preview}` : `${classes.Article}`}>
-      <div className={classes.Head}>
-        <div className={classes.Review}>
-          <div className={classes.Header}>
-            <h5 className={classes.Title}>{preview ? clippingText(title, 40) : title}</h5>
-            <div className={classes.Likes}>
-              <img src={favorited ? Favorited : Heart} alt="Heart-icon" />
-              <span className={classes.LikesCounter}>{favoritesCount}</span>
+const Article = ({ slug }) => {
+  const userInfo = useSelector((state) => state.sign.user)
+  const dispatch = useDispatch()
+  const history = useHistory()
+  useEffect(() => {
+    dispatch(fetchArticleBySlug(slug))
+  }, [])
+  const onEdit = (slug) => {
+    dispatch(clearData())
+    dispatch(clearPayload())
+    history.push({ pathname: `/articles/${slug}/edit` })
+  }
+  const onDelete = (slug) => {
+    dispatch(clearData())
+    dispatch(clearPayload())
+    const data = {
+      slug,
+      token: userInfo.token
+    }
+    dispatch(fetchDeleteMyArticle(data))
+    history.push({ pathname: '/' })
+  }
+  const article = useSelector((state) => state.article)
+  if (article.success) {
+    let control = null
+    if (article.articleData.author.username === userInfo.username) {
+      control = (
+        <div className={classes.Control}>
+          <Popconfirm
+            title="Are you sure to delete this article?"
+            okText="Yes"
+            cancelText="No"
+            onConfirm={() => onDelete(slug)}
+            placement="right"
+          >
+            <Button type="link" className={classes.Delete}>
+              Delete
+            </Button>
+          </Popconfirm>
+          <button type="button" className={classes.Edit} onClick={() => onEdit(slug)}>
+            Edit
+          </button>
+        </div>
+      )
+    }
+    const tags = article.articleData.tagList.map((tag) => (
+      <li key={uuidv4()} className={classes.Tag}>
+        {tag}
+      </li>
+    ))
+    const release = format(new Date(article.articleData.createdAt), 'MMMM dd, yyyy')
+    return (
+      <article className={classes.Article}>
+        <div className={classes.Head}>
+          <div className={classes.Review}>
+            <div className={classes.Header}>
+              <h5 className={classes.Title}>{article.articleData.title}</h5>
+              <div className={classes.Likes}>
+                <img src={article.articleData.favorited ? Favorited : Heart} alt="Heart-icon" />
+                <span className={classes.LikesCounter}>{article.articleData.favoritesCount}</span>
+              </div>
             </div>
+            <ul className={classes.TagList}>{tags}</ul>
+            <p className={classes.Description}>{article.articleData.description}</p>
           </div>
-          <ul className={classes.TagList}>{tags}</ul>
-          <p className={classes.Description}>{preview ? clippingText(description, 200) : description}</p>
-        </div>
-        <div className={classes.Author}>
-          <div className={classes.AuthorInfo}>
-            <h6 className={classes.Name}>{author.username}</h6>
-            <span className={classes.Release}>{release}</span>
+          <div className={classes.AuthorContainer}>
+            <div className={classes.Author}>
+              <div className={classes.AuthorInfo}>
+                <h6 className={classes.Name}>{article.articleData.author.username}</h6>
+                <span className={classes.Release}>{release}</span>
+              </div>
+              <img src={article.articleData.author.image || Avatar} alt="Avatar" className={classes.AuthorAvatar} />
+            </div>
+            {control}
           </div>
-          <img src={author.image || Avatar} alt="Avatar" className={classes.AuthorAvatar} />
         </div>
-      </div>
-      {preview ? null : (
-        <div className={classes.Body}>
-          <p className={classes.Text}>
-            <Markdown>{body}</Markdown>
-          </p>
-        </div>
-      )}
-    </article>
-  )
+        <ReactMarkdown className={classes.Body}>{article.articleData.body}</ReactMarkdown>
+      </article>
+    )
+  }
+  return <div>{article.payload || <MySpin />}</div>
 }
 export default Article

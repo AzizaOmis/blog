@@ -3,7 +3,7 @@ import { useDispatch, useSelector } from 'react-redux'
 import { useHistory, useLocation } from 'react-router-dom'
 import { Pagination } from 'antd'
 
-import { fetchArticles, onPaginationClick } from '../../redux/articlesSlice'
+import { fetchArticles, onPaginationClick } from '../../store/articlesSlice'
 
 import './MyPagination.scss'
 

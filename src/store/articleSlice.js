@@ -1,40 +1,50 @@
 import { createAsyncThunk, createSlice } from '@reduxjs/toolkit'
 
-import { apiConstants } from '../services/constants'
+import ErrorToast from '../components/ErrorToast'
+import MySpin from '../components/MySpin'
+import { apiConstants, toastConstants } from '../services/constants'
 export const fetchArticleBySlug = createAsyncThunk('article/fetchArticleBySlug', async (slug, { rejectWithValue }) => {
   try {
     const response = await fetch(apiConstants.rootApi + apiConstants.getArticleBySlug + String(slug))
     if (!response.ok) {
-      throw new Error(response.status)
+      throw new Error(toastConstants.defaultErrMessage)
     }
     return response.json()
   } catch (error) {
-    return rejectWithValue(error)
+    return rejectWithValue(error.message)
   }
 })
 export const articleSlice = createSlice({
   name: 'article',
   initialState: {
     articleData: {},
-    loading: true,
-    error: false
+    payload: null,
+    success: null
+  },
+  reducers: {
+    clearData: (state) => {
+      state.payload = null
+      state.success = null
+    }
   },
   extraReducers: (builder) => {
     builder
       .addCase(fetchArticleBySlug.pending, (state) => {
-        state.loading = true
-        state.error = false
+        state.payload = <MySpin />
+        state.success = null
+        state.articleData = {}
       })
       .addCase(fetchArticleBySlug.fulfilled, (state, action) => {
-        state.loading = false
+        state.payload = null
         state.articleData = action.payload.article
-        state.error = false
+        state.success = true
       })
       .addCase(fetchArticleBySlug.rejected, (state, action) => {
-        state.loading = false
-        state.error = true
-        console.log(action.payload.message)
+        state.success = null
+        state.articleData = {}
+        state.payload = <ErrorToast message={action.payload} />
       })
   }
 })
+export const { clearData } = articleSlice.actions
 export default articleSlice.reducer

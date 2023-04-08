@@ -2,41 +2,39 @@ import React, { useEffect } from 'react'
 import { useForm } from 'react-hook-form'
 import { useDispatch, useSelector } from 'react-redux'
 import { Link, useHistory } from 'react-router-dom'
-import { toast, ToastContainer } from 'react-toastify'
+import { yupResolver } from '@hookform/resolvers/yup'
+import * as Yup from 'yup'
 
-import { fetchSignIn } from '../../redux/signSlice'
-import { linkConstants, signConstants, toastConstants } from '../../services/constants'
-import MySpin from '../MySpin'
+import { linkConstants, signConstants } from '../../services/constants'
+import { fetchSignIn } from '../../store/signSlice'
 
-import 'react-toastify/dist/ReactToastify.css'
 import classes from './SignIn.module.scss'
 const SignIn = () => {
   const dispatch = useDispatch()
   let history = useHistory()
   const signData = useSelector((state) => state.sign)
   useEffect(() => {
-    if (Object.keys(signData.errorMessage).length !== 0) {
-      for (let key in signData.errorMessage) {
-        toast.error(key + ' ' + signData.errorMessage[key], toastConstants.params)
-      }
-      return
+    if (signData.logged) {
+      history.push({
+        pathname: '/'
+      })
     }
-    if (signData.error) {
-      toast.error(toastConstants.defaultErrMessage, toastConstants.params)
-    }
-  }, [signData.error, signData.errorMessage])
-  useEffect(() => {
-    if (!signData.success) return
-    toast.success(toastConstants.successSignIn, toastConstants.params)
-    history.push({
-      pathname: '/'
-    })
-  }, [signData.success])
+  }, [signData.logged])
+  const validation = Yup.object().shape({
+    email: Yup.string()
+      .required(signConstants.isRequired)
+      .email(signConstants.invalidEmail)
+      .matches(signConstants.emailValidator, signConstants.invalidEmail),
+    password: Yup.string()
+      .required(signConstants.isRequired)
+      .min(6, signConstants.passwordMinLength)
+      .max(40, signConstants.passwordMaxLength)
+  })
   const {
     register,
     handleSubmit,
     formState: { errors }
-  } = useForm()
+  } = useForm({ resolver: yupResolver(validation) })
   const onSubmit = (val) => {
     const data = {
       user: {
@@ -44,27 +42,19 @@ const SignIn = () => {
         password: val.password
       }
     }
-    console.log(data)
     dispatch(fetchSignIn(data))
   }
   return (
     <form onSubmit={handleSubmit(onSubmit)} className={classes.SignIn}>
-      <ToastContainer />
       <h4 className={classes.Title}>Sign In</h4>
-      {signData.loading && <MySpin />}
+      {signData.payload}
       <div className={classes.Data}>
         <div className={classes.Form}>
           <label className={classes.Label} htmlFor={signConstants.email}>
             Email address
           </label>
           <input
-            {...register(signConstants.email, {
-              required: signConstants.isRequired,
-              pattern: {
-                value: signConstants.emailValidator,
-                message: signConstants.invalidEmail
-              }
-            })}
+            {...register(signConstants.email)}
             className={classes.Input}
             type="text"
             id={signConstants.email}
@@ -78,11 +68,7 @@ const SignIn = () => {
             Password
           </label>
           <input
-            {...register(signConstants.password, {
-              required: signConstants.isRequired,
-              minLength: { value: 6, message: signConstants.passwordMinLength },
-              maxLength: { value: 40, message: signConstants.passwordMaxLength }
-            })}
+            {...register(signConstants.password)}
             className={classes.Input}
             type={signConstants.password}
             id={signConstants.password}

@@ -2,7 +2,7 @@ import React from 'react'
 import { useSelector } from 'react-redux'
 import { Link } from 'react-router-dom'
 
-import Article from '../Article/Article'
+import ArticlePreview from '../ArticlePreview'
 import MyAlert from '../MyAlert/MyAlert'
 import MySpin from '../MySpin'
 
@@ -16,17 +16,7 @@ const ArticleList = () => {
     return (
       <Link to={`/articles/${item.slug}`} key={item.slug}>
         <li key={item.slug} className={classes.Article}>
-          <Article
-            preview={true}
-            title={item.title}
-            description={item.description}
-            body={item.body}
-            tagList={item.tagList}
-            createdAt={item.createdAt}
-            favorited={item.favorited}
-            favoritesCount={item.favoritesCount}
-            author={item.author}
-          />
+          <ArticlePreview data={item} />
         </li>
       </Link>
     )

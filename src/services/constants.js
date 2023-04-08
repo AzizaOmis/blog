@@ -6,7 +6,8 @@ export const apiConstants = {
   offset: '&offset=',
   signUp: 'users',
   signIn: 'users/login',
-  login: 'user'
+  login: 'user',
+  postNewArticle: 'articles'
 }
 export const signConstants = {
   username: 'username',
@@ -32,12 +33,21 @@ export const signConstants = {
   save: 'Save',
   image: 'image',
   imagePlaceholder: 'Avatar image',
-  invalidImage: 'You entered an invalid image url.'
+  invalidImage: 'You entered an invalid image url.',
+  title: 'title',
+  titleMaxLength: "Your title mustn't exceed 5000 characters.",
+  description: 'description',
+  text: 'text',
+  test: 'test',
+  tagError: "The field must be filled in and mustn't contain more than 50 characters"
 }
 export const linkConstants = {
+  default: '/',
   signIn: '/sign-in',
   signUp: '/sign-up',
-  profile: '/profile'
+  profile: '/profile',
+  newArticle: '/new-article',
+  editMyArticle: '/articles/{slug}/edit'
 }
 export const toastConstants = {
   params: {
@@ -51,7 +61,9 @@ export const toastConstants = {
     theme: 'light'
   },
   defaultErrMessage: 'Something goes wrong. Please try again later',
-  successSignUp: 'You have successfully registered!',
-  successSignIn: 'You have successfully logged in!',
-  successUpdate: 'Your data has been successfully updated'
+  successSignUp: 'Welcome! You have created a Realworld blog account. Happy blogging!',
+  successSignIn: 'Welcome back!',
+  successUpdate: 'Your data has been successfully updated!',
+  successCreateArticle: 'Your article has been published!',
+  successEditArticle: 'Your article has been successfully edited!'
 }

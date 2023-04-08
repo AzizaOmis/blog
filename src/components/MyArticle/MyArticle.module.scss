@@ -1,40 +1,31 @@
-.Edit {
-  width: 384px;
-  min-height: 498px;
+.MyArticle {
   display: flex;
   flex-direction: column;
+  justify-content: space-between;
   align-items: center;
-  padding: 48px 32px;
-  background: #ffffff;
+  width: 938px;
+  min-height: 701px;
+  padding: 42px 38px;
+  background-color: #ffffff;
   border: 1px solid #d9d9d9;
   box-shadow: 0px 22px 106px rgba(0, 0, 0, 0.07), 0px 9.19107px 44.2843px rgba(0, 0, 0, 0.0503198),
     0px 4.91399px 23.6765px rgba(0, 0, 0, 0.0417275), 0px 2.75474px 13.2728px rgba(0, 0, 0, 0.035),
     0px 1.46302px 7.04911px rgba(0, 0, 0, 0.0282725), 0px 0.608796px 2.93329px rgba(0, 0, 0, 0.0196802);
   border-radius: 6px;
 }
-.Title {
+.Name {
   font-style: normal;
   font-weight: 500;
   font-size: 20px;
   line-height: 28px;
   color: #262626;
-  margin-bottom: 21px;
-}
-.Data {
-  width: 100%;
-  min-height: 292px;
-  display: flex;
-  flex-direction: column;
-  justify-content: space-between;
 }
 .Form {
   display: flex;
   flex-direction: column;
-  align-items: flex-start;
+  width: 100%;
 }
 .Label {
-  width: 100%;
-  display: block;
   font-style: normal;
   font-weight: 400;
   font-size: 14px;
@@ -42,25 +33,67 @@
   color: #262626;
 }
 .Input {
-  width: 100%;
   height: 40px;
-  display: block;
   border: 1px solid #d9d9d9;
   border-radius: 4px;
-}
-.Submit {
-  width: 100%;
-  height: 40px;
-  margin-top: 21px;
-  margin-bottom: 0;
   font-style: normal;
   font-weight: 400;
   font-size: 16px;
   line-height: 24px;
-  color: #ffffff;
-  border: none;
+  outline: none;
+}
+.Textarea {
+  min-height: 168px;
+  font-style: normal;
+  font-weight: 400;
+  font-size: 16px;
+  line-height: 24px;
+}
+.TagInput {
+  min-width: 300px;
+}
+.Button {
+  display: block;
+  width: 118px;
+  height: 40px;
+  background-color: #ffffff;
+  font-style: normal;
+  font-weight: 400;
+  font-size: 16px;
+  line-height: 24px;
   border-radius: 4px;
-  background-color: #1890ff;
+  margin-left: 17px;
+}
+.Delete {
+  border: 1px solid #f5222d;
+  color: #f5222d;
+}
+.AddTag {
+  margin-top: auto;
+  margin-bottom: 5px;
+  border: 1px solid #1890ff;
+  color: #1890ff;
+}
+.Submit {
+  width: 319px;
+  height: 40px;
+  margin-top: 16px;
+  background: #1890ff;
+  border-radius: 4px;
+  color: #ffffff;
+  outline: none;
+  border: none;
+}
+.TagContainer {
+  display: flex;
+}
+.TagList {
+  display: flex;
+  flex-direction: column;
+}
+.TagItem {
+  display: flex;
+  margin-bottom: 5px;
 }
 .Error {
   display: block;

@@ -1,48 +1,31 @@
-import React, { useEffect } from 'react'
+import React from 'react'
 import { useForm } from 'react-hook-form'
 import { useDispatch, useSelector } from 'react-redux'
 import { Link } from 'react-router-dom'
-import { toast, ToastContainer } from 'react-toastify'
 import { yupResolver } from '@hookform/resolvers/yup'
 import * as Yup from 'yup'
 
-import { fetchSignUp } from '../../redux/signSlice'
-import { linkConstants, signConstants, toastConstants } from '../../services/constants'
-import MySpin from '../MySpin'
+import { linkConstants, signConstants } from '../../services/constants'
+import { fetchSignUp } from '../../store/signSlice'
 
-import 'react-toastify/dist/ReactToastify.css'
 import classes from './SignUp.module.scss'
 const SignUp = () => {
   const dispatch = useDispatch()
-  const signData = useSelector((state) => state.sign)
-  useEffect(() => {
-    if (Object.keys(signData.errorMessage).length !== 0) {
-      for (let key in signData.errorMessage) {
-        toast.error(key + ' ' + signData.errorMessage[key], toastConstants.params)
-      }
-      return
-    }
-    if (signData.error) {
-      toast.error(toastConstants.defaultErrMessage, toastConstants.params)
-    }
-  }, [signData.error, signData.errorMessage])
-  useEffect(() => {
-    if (!signData.success) return
-    toast.success(toastConstants.successSignUp, toastConstants.params)
-  }, [signData.success])
+  const signData = useSelector((state) => state.sign.payload)
   const validation = Yup.object().shape({
     username: Yup.string()
       .required(signConstants.isRequired)
       .matches(signConstants.usernameValidator, signConstants.invalidUsername)
-      .test(signConstants.username, signConstants.usernameMinLength, (val) => val.length >= 3)
-      .test(signConstants.username, signConstants.usernameMaxLength, (val) => val.length <= 20),
+      .min(3, signConstants.usernameMinLength)
+      .max(20, signConstants.usernameMaxLength),
     email: Yup.string()
       .required(signConstants.isRequired)
+      .email(signConstants.invalidEmail)
       .matches(signConstants.emailValidator, signConstants.invalidEmail),
     password: Yup.string()
       .required(signConstants.isRequired)
-      .test(signConstants.password, signConstants.passwordMinLength, (val) => val.length >= 6)
-      .test(signConstants.password, signConstants.passwordMaxLength, (val) => val.length <= 40),
+      .min(6, signConstants.passwordMinLength)
+      .max(40, signConstants.passwordMaxLength),
     confirm_password: Yup.string()
       .required(signConstants.isRequired)
       .oneOf([Yup.ref(signConstants.password)], signConstants.mismatchPassword),
@@ -61,14 +44,12 @@ const SignUp = () => {
         password: val.password
       }
     }
-    console.log(data)
     dispatch(fetchSignUp(data))
   }
   return (
     <form onSubmit={handleSubmit(onSubmit)} className={classes.SignUp}>
-      <ToastContainer />
+      {signData}
       <h4 className={classes.Title}>Create new account</h4>
-      {signData.loading && <MySpin />}
       <div className={classes.Data}>
         <div className={classes.Form}>
           <label className={classes.Label} htmlFor={signConstants.username}>

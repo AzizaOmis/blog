@@ -1,61 +1,30 @@
-import React, { useEffect } from 'react'
+import React from 'react'
 import { useForm } from 'react-hook-form'
 import { useDispatch, useSelector } from 'react-redux'
-import { useHistory } from 'react-router-dom'
-import { toast, ToastContainer } from 'react-toastify'
 import { yupResolver } from '@hookform/resolvers/yup'
 import * as Yup from 'yup'
 
-import { fetchEditProfile } from '../../redux/signSlice'
-import { signConstants, toastConstants } from '../../services/constants'
+import { signConstants } from '../../services/constants'
+import { fetchEditProfile } from '../../store/signSlice'
 
 import classes from './EditProfile.module.scss'
 const EditProfile = () => {
   const dispatch = useDispatch()
-  let history = useHistory()
-  const userInfo = useSelector((state) => state.sign.user)
   const signData = useSelector((state) => state.sign)
-  useEffect(() => {
-    if (Object.keys(signData.errorMessage).length !== 0) {
-      for (let key in signData.errorMessage) {
-        toast.error(key + ' ' + signData.errorMessage[key], toastConstants.params)
-      }
-      return
-    }
-    if (signData.error) {
-      toast.error(toastConstants.defaultErrMessage, toastConstants.params)
-    }
-  }, [signData.error, signData.errorMessage])
-  useEffect(() => {
-    if (!signData.success) return
-    toast.success(toastConstants.successUpdate, toastConstants.params)
-    history.push({
-      pathname: '/'
-    })
-  }, [signData.success])
   const validation = Yup.object().shape({
     username: Yup.string()
       .required(signConstants.isRequired)
       .matches(signConstants.usernameValidator, signConstants.invalidUsername)
-      .test(signConstants.username, signConstants.usernameMinLength, (val) => val.length >= 3)
-      .test(signConstants.username, signConstants.usernameMaxLength, (val) => val.length <= 20),
+      .min(3, signConstants.usernameMinLength)
+      .max(20, signConstants.usernameMaxLength),
     email: Yup.string()
       .required(signConstants.isRequired)
       .matches(signConstants.emailValidator, signConstants.invalidEmail),
     password: Yup.string()
       .required(signConstants.isRequired)
-      .test(signConstants.password, signConstants.passwordMinLength, (val) => val.length >= 6)
-      .test(signConstants.password, signConstants.passwordMaxLength, (val) => val.length <= 40),
-    image: Yup.string()
-      .required(signConstants.isRequired)
-      .test(signConstants.image, signConstants.invalidImage, (val) => {
-        try {
-          new URL(val)
-          return true
-        } catch (err) {
-          return false
-        }
-      })
+      .min(6, signConstants.passwordMinLength)
+      .max(40, signConstants.passwordMaxLength),
+    image: Yup.string().url(signConstants.invalidImage)
   })
   const {
     register,
@@ -66,20 +35,22 @@ const EditProfile = () => {
     const data = {
       body: {
         user: {
-          username: val.username,
-          email: val.email,
-          password: val.password,
-          image: val.image
+          username: val.username.trim(),
+          email: val.email.trim(),
+          password: val.password
         }
       },
-      token: userInfo.token
+      token: signData.user.token
+    }
+    if (val.image.trim() !== '') {
+      data.body.user.image = val.image.trim()
     }
     dispatch(fetchEditProfile(data))
     console.log(data)
   }
   return (
     <form onSubmit={handleSubmit(onSubmit)} className={classes.Edit}>
-      <ToastContainer />
+      {signData.payload}
       <h4 className={classes.Title}>Edit Profile</h4>
       <div className={classes.Data}>
         <div className={classes.Form}>
@@ -88,7 +59,7 @@ const EditProfile = () => {
           </label>
           <input
             {...register(signConstants.username)}
-            defaultValue={userInfo.username}
+            defaultValue={signData.user.username}
             className={classes.Input}
             type="text"
             id={signConstants.username}
@@ -103,7 +74,7 @@ const EditProfile = () => {
           </label>
           <input
             {...register(signConstants.email)}
-            defaultValue={userInfo.email}
+            defaultValue={signData.user.email}
             className={classes.Input}
             type={signConstants.email}
             id={signConstants.email}

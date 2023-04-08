@@ -3,8 +3,10 @@ import { useDispatch, useSelector } from 'react-redux'
 import { Link, useHistory, useLocation } from 'react-router-dom'
 
 import Avatar from '../../icons/Avatar.svg'
-import { clearErrors, logout } from '../../redux/signSlice'
 import { linkConstants } from '../../services/constants'
+import { clearData } from '../../store/articleSlice'
+import { clearPayload } from '../../store/myArticleSlice'
+import { clearErrors, logout } from '../../store/signSlice'
 
 import classes from './Header.module.scss'
 
@@ -25,12 +27,16 @@ const Header = () => {
     dispatch(clearErrors())
     dispatch(logout())
   }
+  const onCreate = () => {
+    dispatch(clearData())
+    dispatch(clearPayload())
+  }
   const rendering = logged ? (
     <React.Fragment>
-      <button className={classes.CreateArticle} type="button">
-        <a>
+      <button className={classes.CreateArticle} type="button" onClick={onCreate}>
+        <Link to={linkConstants.newArticle}>
           <span className={classes.GreenText}>Create article</span>
-        </a>
+        </Link>
       </button>
       <Link to={linkConstants.profile}>
         <div className={classes.User} onClick={() => dispatch(clearErrors())}>
@@ -60,7 +66,9 @@ const Header = () => {
   )
   return (
     <div className={classes.Header}>
-      <span className={classes.Name}>Realworld Blog</span>
+      <Link to={linkConstants.default}>
+        <span className={classes.Name}>Realworld Blog</span>
+      </Link>
       {rendering}
     </div>
   )

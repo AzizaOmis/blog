@@ -1,6 +1,9 @@
 import { createAsyncThunk, createSlice } from '@reduxjs/toolkit'
 
-import { apiConstants } from '../services/constants'
+import ErrorToast from '../components/ErrorToast/ErrorToast'
+import MySpin from '../components/MySpin'
+import SuccessToast from '../components/SuccessToast'
+import { apiConstants, toastConstants } from '../services/constants'
 export const fetchSignUp = createAsyncThunk('sign/fetchSignUp', async (data, { rejectWithValue }) => {
   try {
     const response = await fetch(apiConstants.rootApi + apiConstants.signUp, {
@@ -35,9 +38,6 @@ export const fetchSignIn = createAsyncThunk('sign/fetchSignIn', async (data, { r
       res = res.errors
       throw new Error(JSON.stringify(res))
     }
-    if (response.status === 401) {
-      throw new Error('This user is not authorized')
-    }
     if (!response.ok) throw new Error('Something goes wrong')
     return response.json()
   } catch (error) {
@@ -68,7 +68,6 @@ export const fetchLogin = createAsyncThunk('sign/fetchLogin', async (token, { re
 })
 export const fetchEditProfile = createAsyncThunk('sign/fetchEditProfile', async (data, { rejectWithValue }) => {
   try {
-    console.log(JSON.stringify(data.body))
     const response = await fetch(apiConstants.rootApi + apiConstants.login, {
       method: 'PUT',
       headers: {
@@ -98,11 +97,8 @@ export const signSlice = createSlice({
       bio: '',
       image: ''
     },
-    loading: false,
-    error: false,
-    errorMessage: {},
-    success: null,
-    logged: false
+    logged: false,
+    payload: null
   },
   reducers: {
     logout: (state) => {
@@ -112,47 +108,26 @@ export const signSlice = createSlice({
       }
     },
     clearErrors: (state) => {
-      state.error = false
-      state.errorMessage = {}
-      state.success = null
+      state.payload = null
     }
   },
   extraReducers: (builder) => {
     builder
       .addCase(fetchSignUp.pending, (state) => {
-        state.loading = true
-        state.error = false
-        state.errorMessage = {}
-        state.success = null
+        state.payload = <MySpin />
       })
       .addCase(fetchSignUp.fulfilled, (state) => {
-        state.loading = false
-        state.error = false
-        state.errorMessage = {}
-        state.success = true
+        state.payload = <SuccessToast message={toastConstants.successSignUp} />
       })
       .addCase(fetchSignUp.rejected, (state, action) => {
-        state.loading = false
-        state.error = true
-        if (JSON.parse(action.payload)) {
-          let res = JSON.parse(action.payload)
-          for (let key in res) {
-            state.errorMessage[key] = res[key]
-          }
-        }
+        state.payload = <ErrorToast message={action.payload} />
       })
       .addCase(fetchSignIn.pending, (state) => {
-        state.loading = true
-        state.error = false
-        state.errorMessage = {}
-        state.success = null
+        state.payload = <MySpin />
       })
       .addCase(fetchSignIn.fulfilled, (state, action) => {
-        state.loading = false
-        state.error = false
-        state.errorMessage = {}
+        state.payload = null
         state.logged = true
-        state.success = true
         const { email, token, username, bio, image } = action.payload.user
         state.user.email = email
         state.user.token = token
@@ -161,25 +136,13 @@ export const signSlice = createSlice({
         state.user.image = image
       })
       .addCase(fetchSignIn.rejected, (state, action) => {
-        state.loading = false
-        state.error = true
-        if (JSON.parse(action.payload)) {
-          let res = JSON.parse(action.payload)
-          for (let key in res) {
-            state.errorMessage[key] = res[key]
-          }
-        }
+        state.payload = <ErrorToast message={action.payload} />
       })
       .addCase(fetchLogin.pending, (state) => {
-        state.loading = true
-        state.error = false
-        state.errorMessage = {}
-        state.success = null
+        state.payload = null
       })
       .addCase(fetchLogin.fulfilled, (state, action) => {
-        state.loading = false
-        state.error = false
-        state.errorMessage = {}
+        state.payload = null
         state.logged = true
         const { email, token, username, bio, image } = action.payload.user
         state.user.email = email
@@ -189,27 +152,13 @@ export const signSlice = createSlice({
         state.user.image = image
       })
       .addCase(fetchLogin.rejected, (state, action) => {
-        state.loading = false
-        state.error = true
-        if (JSON.parse(action.payload)) {
-          let res = JSON.parse(action.payload)
-          for (let key in res) {
-            state.errorMessage[key] = res[key]
-          }
-        }
+        state.payload = <ErrorToast message={action.payload} />
       })
       .addCase(fetchEditProfile.pending, (state) => {
-        state.loading = true
-        state.error = false
-        state.errorMessage = {}
-        state.success = null
+        state.payload = <MySpin />
       })
       .addCase(fetchEditProfile.fulfilled, (state, action) => {
-        state.loading = false
-        state.error = false
-        state.errorMessage = {}
-        state.logged = true
-        state.success = true
+        state.payload = <SuccessToast message={toastConstants.successUpdate} />
         const { email, token, username, bio, image } = action.payload.user
         state.user.email = email
         state.user.token = token
@@ -218,14 +167,7 @@ export const signSlice = createSlice({
         state.user.image = image
       })
       .addCase(fetchEditProfile.rejected, (state, action) => {
-        state.loading = false
-        state.error = true
-        if (JSON.parse(action.payload)) {
-          let res = JSON.parse(action.payload)
-          for (let key in res) {
-            state.errorMessage[key] = res[key]
-          }
-        }
+        state.payload = <ErrorToast message={action.payload} />
       })
   }
 })
