@@ -59,7 +59,6 @@ const Article = ({ slug }) => {
     }
     if (favorited) dispatch(fetchDeleteFavorite(data))
     if (!favorited) dispatch(fetchPostFavorite(data))
-    setTimeout(() => dispatch(fetchArticleBySlug(data)), 400)
   }
   const article = useSelector((state) => state.article)
   if (article.success) {
