@@ -1,1 +1,1 @@
-blog-azizaomis.vercel.app
+https://blog-azizaomis.vercel.app/
