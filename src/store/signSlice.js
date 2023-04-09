@@ -107,7 +107,7 @@ export const signSlice = createSlice({
         state.user[key] = ''
       }
     },
-    clearErrors: (state) => {
+    clearSignPayload: (state) => {
       state.payload = null
     }
   },
@@ -171,5 +171,5 @@ export const signSlice = createSlice({
       })
   }
 })
-export const { clearErrors, logout } = signSlice.actions
+export const { clearSignPayload, logout } = signSlice.actions
 export default signSlice.reducer

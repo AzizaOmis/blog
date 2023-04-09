@@ -46,7 +46,6 @@ const EditProfile = () => {
       data.body.user.image = val.image.trim()
     }
     dispatch(fetchEditProfile(data))
-    console.log(data)
   }
   return (
     <form onSubmit={handleSubmit(onSubmit)} className={classes.Edit}>

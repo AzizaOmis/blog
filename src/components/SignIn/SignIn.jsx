@@ -16,7 +16,7 @@ const SignIn = () => {
   useEffect(() => {
     if (signData.logged) {
       history.push({
-        pathname: '/'
+        pathname: linkConstants.default
       })
     }
   }, [signData.logged])

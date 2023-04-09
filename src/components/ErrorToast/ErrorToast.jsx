@@ -6,12 +6,12 @@ import { toastConstants } from '../../services/constants'
 import 'react-toastify/dist/ReactToastify.css'
 
 const ErrorToast = ({ message }) => {
-  if (JSON.parse(message)) {
+  try {
     let res = JSON.parse(message)
     for (let key in res) {
       toast.error(key + ' ' + res[key], toastConstants.params)
     }
-  } else {
+  } catch {
     toast.error(toastConstants.defaultErrMessage, toastConstants.params)
   }
   return <ToastContainer />

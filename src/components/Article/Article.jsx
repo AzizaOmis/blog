@@ -9,8 +9,14 @@ import { v4 as uuidv4 } from 'uuid'
 import Avatar from '../../icons/Avatar.svg'
 import Favorited from '../../icons/Favorited.svg'
 import Heart from '../../icons/Heart.svg'
-import { clearData, fetchArticleBySlug } from '../../store/articleSlice'
-import { clearPayload, fetchDeleteMyArticle } from '../../store/myArticleSlice'
+import { linkConstants } from '../../services/constants'
+import {
+  clearArticlePayload,
+  fetchArticleBySlug,
+  fetchDeleteFavorite,
+  fetchPostFavorite
+} from '../../store/articleSlice'
+import { clearMyArticlePayload, fetchDeleteMyArticle } from '../../store/myArticleSlice'
 import MySpin from '../MySpin'
 
 import classes from './Article.module.scss'
@@ -19,22 +25,41 @@ const Article = ({ slug }) => {
   const dispatch = useDispatch()
   const history = useHistory()
   useEffect(() => {
-    dispatch(fetchArticleBySlug(slug))
+    const data = {
+      slug,
+      token: userInfo.token
+    }
+    dispatch(fetchArticleBySlug(data))
   }, [])
   const onEdit = (slug) => {
-    dispatch(clearData())
-    dispatch(clearPayload())
+    dispatch(clearArticlePayload())
+    dispatch(clearMyArticlePayload())
     history.push({ pathname: `/articles/${slug}/edit` })
   }
   const onDelete = (slug) => {
-    dispatch(clearData())
-    dispatch(clearPayload())
+    dispatch(clearArticlePayload())
+    dispatch(clearMyArticlePayload())
     const data = {
       slug,
       token: userInfo.token
     }
     dispatch(fetchDeleteMyArticle(data))
-    history.push({ pathname: '/' })
+    setTimeout(() => history.push({ pathname: linkConstants.default }), 400)
+  }
+  const likeToggler = (e, favorited) => {
+    e.stopPropagation()
+    e.preventDefault()
+    if (userInfo.token === '' && localStorage.token === '') {
+      history.push({ pathname: linkConstants.signIn })
+      return
+    }
+    const data = {
+      slug,
+      token: userInfo.token
+    }
+    if (favorited) dispatch(fetchDeleteFavorite(data))
+    if (!favorited) dispatch(fetchPostFavorite(data))
+    setTimeout(() => dispatch(fetchArticleBySlug(data)), 400)
   }
   const article = useSelector((state) => state.article)
   if (article.success) {
@@ -72,7 +97,11 @@ const Article = ({ slug }) => {
             <div className={classes.Header}>
               <h5 className={classes.Title}>{article.articleData.title}</h5>
               <div className={classes.Likes}>
-                <img src={article.articleData.favorited ? Favorited : Heart} alt="Heart-icon" />
+                <img
+                  src={article.articleData.favorited ? Favorited : Heart}
+                  onClick={(e) => likeToggler(e, article.articleData.favorited)}
+                  alt="Heart-icon"
+                />
                 <span className={classes.LikesCounter}>{article.articleData.favoritesCount}</span>
               </div>
             </div>

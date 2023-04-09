@@ -2,10 +2,16 @@ import { createAsyncThunk, createSlice } from '@reduxjs/toolkit'
 
 import { apiConstants } from '../services/constants'
 
-export const fetchArticles = createAsyncThunk('articles/fetchArticles', async (offset, { rejectWithValue }) => {
+export const fetchArticles = createAsyncThunk('articles/fetchArticles', async (data, { rejectWithValue }) => {
   try {
     const response = await fetch(
-      apiConstants.rootApi + apiConstants.getArticles + apiConstants.limit + apiConstants.offset + String(offset)
+      apiConstants.rootApi + apiConstants.getArticles + apiConstants.limit + apiConstants.offset + String(data.offset),
+      {
+        method: 'GET',
+        headers: {
+          Authorization: `Token ${data.token}`
+        }
+      }
     )
     if (!response.ok) {
       throw new Error(response.status)

@@ -1,8 +1,8 @@
 import React, { useEffect } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
-import { BrowserRouter as Router, Route } from 'react-router-dom'
+import { BrowserRouter as Router, Redirect, Route } from 'react-router-dom'
 
-import { linkConstants } from '../../services/constants'
+import { apiConstants, linkConstants } from '../../services/constants'
 import { fetchLogin } from '../../store/signSlice'
 import Article from '../Article'
 import ArticleList from '../ArticleList'
@@ -18,26 +18,48 @@ import classes from './App.module.scss'
 const App = () => {
   const dispatch = useDispatch()
   const token = useSelector((state) => state.sign.user.token)
+  const logged = useSelector((state) => state.sign.logged)
   useEffect(() => {
-    if (!localStorage.getItem('token')) return
-    if (localStorage.getItem('token') !== '') {
-      const token = localStorage.getItem('token')
+    if (!localStorage.getItem(apiConstants.token)) return
+    if (localStorage.getItem(apiConstants.token) !== '') {
+      const token = localStorage.getItem(apiConstants.token)
       dispatch(fetchLogin(token))
     }
   }, [])
   useEffect(() => {
-    localStorage.setItem('token', token)
+    localStorage.setItem(apiConstants.token, token)
   }, [token])
+  function PrivateRoute({ children, ...rest }) {
+    return (
+      <Route
+        {...rest}
+        render={({ location }) =>
+          logged ? (
+            children
+          ) : (
+            <Redirect
+              to={{
+                pathname: linkConstants.signIn,
+                state: { from: location }
+              }}
+            />
+          )
+        }
+      />
+    )
+  }
   return (
     <section className={classes.App}>
       <Router>
-        <Route path="/" component={Header} />
+        <Route path={linkConstants.default} component={Header} />
         <section className={classes.Main}>
-          <Route path={linkConstants.signIn} component={SignIn} />
-          <Route path={linkConstants.signUp} component={SignUp} />
-          <Route path={linkConstants.profile} component={EditProfile} />
-          <Route exact strict path="/articles/" component={ArticleList} />
-          <Route exact strict path="/articles/" component={MyPagination} />
+          <Route path={linkConstants.signIn} exact strict component={SignIn} />
+          <Route path={linkConstants.signUp} exact strict component={SignUp} />
+          <PrivateRoute path={linkConstants.profile} exact strict>
+            <EditProfile />
+          </PrivateRoute>
+          <Route exact path={linkConstants.articles} component={ArticleList} />
+          <Route exact path={linkConstants.articles} component={MyPagination} />
           <Route
             path="/articles/:slug"
             exact
@@ -52,7 +74,9 @@ const App = () => {
               return <MyArticle edit={true} slug={match.params.slug} />
             }}
           />
-          <Route path={linkConstants.newArticle} component={MyArticle} />
+          <PrivateRoute path={linkConstants.newArticle} exact strict>
+            <MyArticle />
+          </PrivateRoute>
         </section>
       </Router>
     </section>

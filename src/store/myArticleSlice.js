@@ -1,7 +1,6 @@
 import { createAsyncThunk, createSlice } from '@reduxjs/toolkit'
 
 import ErrorToast from '../components/ErrorToast/ErrorToast'
-import MyAlert from '../components/MyAlert'
 import MySpin from '../components/MySpin'
 import SuccessToast from '../components/SuccessToast'
 import { apiConstants, toastConstants } from '../services/constants'
@@ -64,6 +63,7 @@ export const fetchDeleteMyArticle = createAsyncThunk(
           Authorization: `Token ${data.token}`
         }
       })
+      if (response.status === 204) return
       if (response.status === 422) {
         let res = await response.json()
         res = res.errors
@@ -82,7 +82,7 @@ export const myArticleSlice = createSlice({
     payload: null
   },
   reducers: {
-    clearPayload: (state) => {
+    clearMyArticlePayload: (state) => {
       state.payload = null
     }
   },
@@ -110,12 +110,12 @@ export const myArticleSlice = createSlice({
         state.payload = <MySpin />
       })
       .addCase(fetchDeleteMyArticle.fulfilled, (state) => {
-        state.payload = <MyAlert message="This article has been removed" />
+        state.payload = null
       })
       .addCase(fetchDeleteMyArticle.rejected, (state, action) => {
         state.payload = <ErrorToast message={action.payload} />
       })
   }
 })
-export const { clearPayload } = myArticleSlice.actions
+export const { clearMyArticlePayload } = myArticleSlice.actions
 export default myArticleSlice.reducer

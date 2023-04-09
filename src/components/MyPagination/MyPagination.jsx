@@ -10,11 +10,16 @@ import './MyPagination.scss'
 const MyPagination = () => {
   let { articlesCount, currentPage } = useSelector((state) => state.articles)
   const dispatch = useDispatch()
+  const token = useSelector((state) => state.sign.user.token)
   let history = useHistory()
   let location = useLocation()
   const onChange = (page) => {
     dispatch(onPaginationClick(page))
-    dispatch(fetchArticles((page - 1) * 5))
+    const data = {
+      offset: (page - 1) * 5,
+      token: token || localStorage.token
+    }
+    dispatch(fetchArticles(data))
     history.push({
       search: `page=${page}`
     })

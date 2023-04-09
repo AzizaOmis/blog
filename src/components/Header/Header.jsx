@@ -4,9 +4,9 @@ import { Link, useHistory, useLocation } from 'react-router-dom'
 
 import Avatar from '../../icons/Avatar.svg'
 import { linkConstants } from '../../services/constants'
-import { clearData } from '../../store/articleSlice'
-import { clearPayload } from '../../store/myArticleSlice'
-import { clearErrors, logout } from '../../store/signSlice'
+import { clearArticleData } from '../../store/articleSlice'
+import { clearMyArticlePayload } from '../../store/myArticleSlice'
+import { clearSignPayload, logout } from '../../store/signSlice'
 
 import classes from './Header.module.scss'
 
@@ -14,32 +14,37 @@ const Header = () => {
   let history = useHistory()
   let location = useLocation()
   useEffect(() => {
-    if (location.pathname === '/') {
+    if (location.pathname === linkConstants.default) {
       history.push({
-        pathname: '/articles/'
+        pathname: linkConstants.articles
       })
     }
   })
   const dispatch = useDispatch()
   const logged = useSelector((state) => state.sign.logged)
   const userInfo = useSelector((state) => state.sign.user)
-  const onLogout = () => {
-    dispatch(clearErrors())
-    dispatch(logout())
+  const clearData = () => {
+    dispatch(clearArticleData())
+    dispatch(clearMyArticlePayload())
   }
-  const onCreate = () => {
-    dispatch(clearData())
-    dispatch(clearPayload())
+  const onLogout = () => {
+    dispatch(clearSignPayload())
+    dispatch(logout())
+    clearData()
+  }
+  const onEdit = () => {
+    dispatch(clearSignPayload())
+    clearData()
   }
   const rendering = logged ? (
     <React.Fragment>
-      <button className={classes.CreateArticle} type="button" onClick={onCreate}>
+      <button className={classes.CreateArticle} type="button" onClick={clearData}>
         <Link to={linkConstants.newArticle}>
           <span className={classes.GreenText}>Create article</span>
         </Link>
       </button>
       <Link to={linkConstants.profile}>
-        <div className={classes.User} onClick={() => dispatch(clearErrors())}>
+        <div className={classes.User} onClick={onEdit}>
           <span className={classes.DefaultText}>{userInfo.username}</span>
           <img src={userInfo.image || Avatar} alt="Avatar" className={classes.Avatar} />
         </div>
@@ -52,12 +57,12 @@ const Header = () => {
     </React.Fragment>
   ) : (
     <React.Fragment>
-      <button onClick={() => dispatch(clearErrors())} className={classes.SignIn} type="button">
+      <button onClick={() => dispatch(clearSignPayload())} className={classes.SignIn} type="button">
         <Link to={linkConstants.signIn}>
           <span className={classes.DefaultText}>Sign In</span>
         </Link>
       </button>
-      <button onClick={() => dispatch(clearErrors())} className={classes.SignUp} type="button">
+      <button onClick={() => dispatch(clearSignPayload())} className={classes.SignUp} type="button">
         <Link to={linkConstants.signUp}>
           <span className={classes.GreenText}>Sign Up</span>
         </Link>
@@ -66,7 +71,7 @@ const Header = () => {
   )
   return (
     <div className={classes.Header}>
-      <Link to={linkConstants.default}>
+      <Link to={linkConstants.default} onClick={clearData}>
         <span className={classes.Name}>Realworld Blog</span>
       </Link>
       {rendering}

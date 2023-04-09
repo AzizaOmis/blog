@@ -4,7 +4,7 @@ import { useDispatch, useSelector } from 'react-redux'
 import { yupResolver } from '@hookform/resolvers/yup'
 import * as Yup from 'yup'
 
-import { signConstants } from '../../services/constants'
+import { alertConstants, signConstants } from '../../services/constants'
 import { fetchEditMyArticle, fetchPostMyArticle } from '../../store/myArticleSlice'
 import MyAlert from '../MyAlert'
 
@@ -30,15 +30,13 @@ const MyArticle = ({ edit }) => {
   let fetchFunc = fetchPostMyArticle
   if (edit) {
     if (!article.articleData.slug) {
-      return <MyAlert message="An error occurred due to a network interruption" />
+      return <MyAlert message={alertConstants.network} />
     }
     let arr = []
     article.articleData.tagList.forEach((item) => {
       arr.push({ name: `${item}` })
     })
-    defValues = {
-      tags: arr
-    }
+    defValues.tags = arr
     fetchFunc = fetchEditMyArticle
   }
   const {
@@ -69,7 +67,6 @@ const MyArticle = ({ edit }) => {
     val.tags.forEach((item) => {
       data.body.article.tagList.push(item.name)
     })
-    console.log(data)
     dispatch(fetchFunc(data))
   }
   return (

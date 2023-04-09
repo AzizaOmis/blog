@@ -7,7 +7,9 @@ export const apiConstants = {
   signUp: 'users',
   signIn: 'users/login',
   login: 'user',
-  postNewArticle: 'articles'
+  postNewArticle: 'articles',
+  favorite: '/favorite',
+  token: 'token'
 }
 export const signConstants = {
   username: 'username',
@@ -43,11 +45,11 @@ export const signConstants = {
 }
 export const linkConstants = {
   default: '/',
+  articles: '/articles',
   signIn: '/sign-in',
   signUp: '/sign-up',
   profile: '/profile',
-  newArticle: '/new-article',
-  editMyArticle: '/articles/{slug}/edit'
+  newArticle: '/new-article'
 }
 export const toastConstants = {
   params: {
@@ -66,4 +68,8 @@ export const toastConstants = {
   successUpdate: 'Your data has been successfully updated!',
   successCreateArticle: 'Your article has been published!',
   successEditArticle: 'Your article has been successfully edited!'
+}
+export const alertConstants = {
+  default: 'An error occurred. Please check your network connection or try again later.',
+  network: 'An error occurred due to a network interruption'
 }
